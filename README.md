@@ -1,6 +1,6 @@
 # moomi
 
-A new Flutter project.
+A new Flutter nice note app project.
 
 ## Getting Started
 
