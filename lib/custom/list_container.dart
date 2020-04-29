@@ -23,6 +23,7 @@ class ListContainer extends StatelessWidget {
             ],
           )
     : ListView(
+      shrinkWrap: true,
             children: notes.map((tx) => ListContainerItem(
                   key: ValueKey(tx.id),
                   note: tx,

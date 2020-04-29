@@ -42,9 +42,9 @@ class _NewEditScreenState extends State<NewEditScreen> {
   }
 
   void _submitData() {
-    if (_descriptionController.text.isEmpty) {
-      return;
-    }
+    // if (_descriptionController.text.isEmpty) {
+    //   return;
+    // }
     final enterdTitle = _titleController.text;
     final enterdDiscription = _descriptionController.text;
 
@@ -156,24 +156,21 @@ class _NewEditScreenState extends State<NewEditScreen> {
           ),
           Container(
             margin: EdgeInsets.only(top: 16),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Expanded(
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: tagsWidgetList,
-                  ),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: tagsWidgetList,
                 ),
                 Column(
                   children: <Widget>[
-                    Expanded(
-                      flex: 0,
-                      child: Text(
-                        _selectedDate == null
-                            ? 'No Date Chosen!'
-                            : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
-                      ),
+                    Text(
+                      _selectedDate == null
+                          ? 'No Date Chosen!'
+                          : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
                     ),
                     FlatButton(
                       color: Theme.of(context).primaryColor,

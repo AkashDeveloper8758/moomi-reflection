@@ -10,21 +10,21 @@ class Tags extends StatefulWidget {
 }
 
 class _TagsState extends State<Tags> {
-bool taped = false ;
+  bool taped = false;
 
-_taped() {
-  setState(() {
-  taped = !taped; 
-  });
-}
+  _taped() {
+    setState(() {
+      taped = !taped;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.only(left: 8, top: 4, bottom: 4, right: 0),
       decoration: BoxDecoration(
-          color: Theme.of(context).accentColor,
-          borderRadius: BorderRadius.circular(18)),
+          color: Theme.of(context).accentColor.withOpacity(.7),
+          borderRadius: BorderRadius.circular(28)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -34,14 +34,22 @@ _taped() {
           ),
           Container(
             margin: EdgeInsets.only(left: 8),
+            height: 35,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
-                shape: BoxShape.circle, color: MyColors.greenCustom),
+                shape: BoxShape.circle,
+                color: taped?MyColors.greenCustom:Theme.of(context).primaryColor,
+                boxShadow: [
+                  BoxShadow(blurRadius: 3, color:taped?MyColors.greenCustom:Theme.of(context).primaryColor)
+                ]),
             child: IconButton(
-              onPressed: _taped,
+              iconSize: 24,
+              // alignment: Alignment.topCenter,
               icon: Icon(
-                Icons.add,
-                color: taped ? Colors.red : Colors.white,
+                taped?Icons.add:Icons.remove,
+                color: Colors.white,
               ),
+              onPressed: _taped,
             ),
           ),
         ],
