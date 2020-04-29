@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:moomi/custom/custom_colors.dart';
-import 'package:moomi/custom/tags.dart';
-import 'package:moomi/models/note.dart';
+import 'package:intl/intl.dart';
+
+import '../custom/custom_colors.dart';
+import '../custom/tags.dart';
+import '../models/note.dart';
 
 class NewEditScreen extends StatefulWidget {
+  final Function addNote;
+
+  NewEditScreen(this.addNote);
+
   @override
   _NewEditScreenState createState() => _NewEditScreenState();
 }
 
 class _NewEditScreenState extends State<NewEditScreen> {
-  var _titleController = TextEditingController();
-
-  var _descriptionController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  DateTime _selectedDate;
 
   final List<Widget> tagsWidgetList = [];
 
@@ -19,7 +25,7 @@ class _NewEditScreenState extends State<NewEditScreen> {
     generalData.tags
         .map(
           (item) => {
-            print('item: $item'),
+          //  print('item: $item'),
             tagsWidgetList.add(
               Tags(item),
             ),
@@ -35,11 +41,52 @@ class _NewEditScreenState extends State<NewEditScreen> {
     super.initState();
   }
 
+  void _submitData() {
+    if (_descriptionController.text.isEmpty) {
+      return;
+    }
+    final enterdTitle = _titleController.text;
+    final enterdDiscription = _descriptionController.text;
+
+    if (enterdTitle.isEmpty ||
+        enterdDiscription.isEmpty ||
+        _selectedDate == null) {
+      return;
+    }
+
+    widget.addNote(
+      enterdTitle,
+      enterdDiscription,
+      _selectedDate,
+    );
+
+    Navigator.of(context).pop();
+  }
+
+  void _presentDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2019),
+      lastDate: DateTime.now(),
+    ).then((pickedDate) {
+      if (pickedDate == null) {
+        return;
+      }
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Note',style: TextStyle(color: MyColors.textDark),),
+        title: Text(
+          'Create Note',
+          style: TextStyle(color: MyColors.textDark),
+        ),
         backgroundColor: MyColors.customBackgound,
         elevation: 0,
         iconTheme: IconThemeData(color: MyColors.textDark),
@@ -68,6 +115,7 @@ class _NewEditScreenState extends State<NewEditScreen> {
               children: <Widget>[
                 Container(
                   child: TextField(
+                    onSubmitted: (_) => _submitData,
                     controller: _titleController,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
@@ -108,19 +156,51 @@ class _NewEditScreenState extends State<NewEditScreen> {
           ),
           Container(
             margin: EdgeInsets.only(top: 16),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: tagsWidgetList,
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: tagsWidgetList,
+                  ),
+                ),
+                Column(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 0,
+                      child: Text(
+                        _selectedDate == null
+                            ? 'No Date Chosen!'
+                            : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
+                      ),
+                    ),
+                    FlatButton(
+                      color: Theme.of(context).primaryColor,
+                      textColor: Colors.white,
+                      child: Text(
+                        'Choose Date',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: _presentDatePicker,
+                    ),
+                  ],
+                ),
+              ],
             ),
           )
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: _submitData,
         backgroundColor: Theme.of(context).primaryColor,
-        icon: Icon(Icons.save,color:Colors.white),
-        label: Text('Save',style: TextStyle(fontSize: 16,color: Colors.white),),
+        icon: Icon(Icons.save, color: Colors.white),
+        label: Text(
+          'Save',
+          style: TextStyle(fontSize: 16, color: Colors.white),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

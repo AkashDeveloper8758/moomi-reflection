@@ -1,11 +1,45 @@
 import 'package:flutter/material.dart' hide Color;
-import 'package:moomi/screens/edit_new_creen.dart';
+
+import '../screens/edit_new_creen.dart';
 import '../custom/custom_colors.dart';
-import 'package:moomi/models/note.dart';
+import '../models/note.dart';
 import '../custom/list_container.dart';
 
-class Home extends StatelessWidget {
-  var _searchController = TextEditingController();
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  final _searchController = TextEditingController();
+  
+  final List<Note> _userNotes = [
+   /*Note(
+    id: '1',
+    date: DateTime.now(),
+    description:
+        'this is my best day ever, i had spent my day with my grandparents in park,and like ia am playing with my friend like sam dam pan and folkeor with cruse and mission impossible',
+    title: 'One of the best day',
+    reminderTime: '18 mar, 8:00pm',
+    tags: ['nice', 'happiest', 'preety', 'cool', 'amazing'],
+  ),*/
+  ];
+
+ void _addNewNote(
+      String notetitle, String noteDescription, DateTime choosenDate,) {
+    final newNote = Note(
+      id: DateTime.now().toString(),
+      title: notetitle,
+      tags: null,
+      description: noteDescription,
+      date: choosenDate,
+      reminderTime: null,
+      
+    );
+    setState(() {
+      _userNotes.add(newNote);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +50,7 @@ class Home extends StatelessWidget {
         body: CustomScrollView(
           slivers: <Widget>[
             SliverAppBar(
-                expandedHeight: 200,
+                expandedHeight: 150,
                 titleSpacing: 0.0,
                 //floating: true,
                 pinned: true,
@@ -26,7 +60,8 @@ class Home extends StatelessWidget {
                   padding: EdgeInsets.symmetric(
                     horizontal: 18,
                   ),
-                  margin: EdgeInsets.only(top: 4, left: 8, right: 8, bottom: 4),
+                  margin:
+                      EdgeInsets.only(top: 10, left: 8, right: 8, bottom: 4),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(34),
@@ -83,17 +118,18 @@ class Home extends StatelessWidget {
                 )),
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (ctx, items) => ListContainer(userNotes[items], mediaQuery),
-                childCount: userNotes.length,
+                (ctx, items) => ListContainer(_userNotes, mediaQuery),
+                childCount: _userNotes.length,
               ),
             )
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
+          onPressed: () 
+         {
             Navigator.of(context)
-                .push(MaterialPageRoute(builder: (ctx) => NewEditScreen()));
-          },
+                .push(MaterialPageRoute(builder: (ctx) => NewEditScreen(_addNewNote)));
+          } ,
           backgroundColor: Theme.of(context).primaryColor,
           splashColor: Theme.of(context).primaryColor.withOpacity(.5),
           child: Icon(

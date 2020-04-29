@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart' hide Color;
 import '../custom/custom_colors.dart';
 import 'package:moomi/models/note.dart';
@@ -80,8 +81,8 @@ class Test extends StatelessWidget {
               )),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (ctx, items) => ListContainer(userNotes[items],mediaQuery),
-              childCount: userNotes.length,
+              (ctx, items) => ListContainer(_userNotes[items],mediaQuery),
+              childCount: _userNotes.length,
             ),
           )
         ],
@@ -175,3 +176,4 @@ class Test extends StatelessWidget {
     );
   }
 }
+*/
