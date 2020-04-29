@@ -38,15 +38,15 @@ class _TagsState extends State<Tags> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: taped?MyColors.greenCustom:Theme.of(context).primaryColor,
+                color: taped?Theme.of(context).primaryColor:MyColors.greenCustom,
                 boxShadow: [
-                  BoxShadow(blurRadius: 3, color:taped?MyColors.greenCustom:Theme.of(context).primaryColor)
+                  BoxShadow(blurRadius: 3, color:taped?Theme.of(context).primaryColor:MyColors.greenCustom)
                 ]),
             child: IconButton(
               iconSize: 24,
               // alignment: Alignment.topCenter,
               icon: Icon(
-                taped?Icons.add:Icons.remove,
+                taped?Icons.remove:Icons.add,
                 color: Colors.white,
               ),
               onPressed: _taped,

@@ -6,9 +6,9 @@ import '../custom/tags.dart';
 import '../models/note.dart';
 
 class NewEditScreen extends StatefulWidget {
-  final Function addNote;
+  // final Function addNote;
 
-  NewEditScreen(this.addNote);
+  // NewEditScreen(this.addNote);
 
   @override
   _NewEditScreenState createState() => _NewEditScreenState();
@@ -25,7 +25,7 @@ class _NewEditScreenState extends State<NewEditScreen> {
     generalData.tags
         .map(
           (item) => {
-          //  print('item: $item'),
+            //  print('item: $item'),
             tagsWidgetList.add(
               Tags(item),
             ),
@@ -48,34 +48,38 @@ class _NewEditScreenState extends State<NewEditScreen> {
     final enterdTitle = _titleController.text;
     final enterdDiscription = _descriptionController.text;
 
-    if (enterdTitle.isEmpty ||
-        enterdDiscription.isEmpty ||
-        _selectedDate == null) {
+    if (enterdTitle.isEmpty || enterdDiscription.isEmpty) {
       return;
     }
-
-    widget.addNote(
-      enterdTitle,
-      enterdDiscription,
-      _selectedDate,
+    userNotes.add(
+      Note(
+          date: DateTime.now(),
+          title: enterdTitle,
+          description: enterdDiscription,
+          tags: [
+            'bad news',
+            'cool guy',
+            'top class',
+            'fight day',
+          ],
+          reminderTime: null,
+          id: DateTime.now().toIso8601String()),
     );
-
     Navigator.of(context).pop();
   }
 
-  void _presentDatePicker() {
-    showDatePicker(
+  void _presentDatePicker() async {
+    final pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2019),
       lastDate: DateTime.now(),
-    ).then((pickedDate) {
-      if (pickedDate == null) {
-        return;
-      }
-      setState(() {
-        _selectedDate = pickedDate;
-      });
+    );
+    if (pickedDate == null) {
+      return;
+    }
+    setState(() {
+      _selectedDate = pickedDate;
     });
   }
 
@@ -165,26 +169,26 @@ class _NewEditScreenState extends State<NewEditScreen> {
                   runSpacing: 8,
                   children: tagsWidgetList,
                 ),
-                Column(
-                  children: <Widget>[
-                    Text(
-                      _selectedDate == null
-                          ? 'No Date Chosen!'
-                          : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
-                    ),
-                    FlatButton(
-                      color: Theme.of(context).primaryColor,
-                      textColor: Colors.white,
-                      child: Text(
-                        'Choose Date',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: _presentDatePicker,
-                    ),
-                  ],
-                ),
+                // Column(
+                //   children: <Widget>[
+                //     Text(
+                //       _selectedDate == null
+                //           ? 'No Date Chosen!'
+                //           : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
+                //     ),
+                //     FlatButton(
+                //       color: Theme.of(context).primaryColor,
+                //       textColor: Colors.white,
+                //       child: Text(
+                //         'Choose Date',
+                //         style: TextStyle(
+                //           fontWeight: FontWeight.bold,
+                //         ),
+                //       ),
+                //       onPressed: _presentDatePicker,
+                //     ),
+                //   ],
+                // ),
               ],
             ),
           )

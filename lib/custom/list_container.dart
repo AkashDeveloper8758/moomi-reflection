@@ -12,6 +12,7 @@ class ListContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return notes.isEmpty 
     ? Column(
+      mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
                 'No Notes added yet !',

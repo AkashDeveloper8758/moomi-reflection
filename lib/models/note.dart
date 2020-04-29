@@ -34,7 +34,7 @@ final GenData generalData = GenData(tags: [
   'sad day'
 ], userName: 'akash');
 
-/*
+
 final List<Note> userNotes = [
   Note(
     id: '1',
@@ -48,4 +48,3 @@ final List<Note> userNotes = [
   
   
 ];
-*/

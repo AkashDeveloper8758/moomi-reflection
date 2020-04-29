@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Color;
+import 'package:moomi/custom/list_item.dart';
 
 import '../screens/edit_new_creen.dart';
 import '../custom/custom_colors.dart';
@@ -12,34 +13,36 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final _searchController = TextEditingController();
-  
-  final List<Note> _userNotes = [
-   /*Note(
-    id: '1',
-    date: DateTime.now(),
-    description:
-        'this is my best day ever, i had spent my day with my grandparents in park,and like ia am playing with my friend like sam dam pan and folkeor with cruse and mission impossible',
-    title: 'One of the best day',
-    reminderTime: '18 mar, 8:00pm',
-    tags: ['nice', 'happiest', 'preety', 'cool', 'amazing'],
-  ),*/
-  ];
 
- void _addNewNote(
-      String notetitle, String noteDescription, DateTime choosenDate,) {
-    final newNote = Note(
-      id: DateTime.now().toString(),
-      title: notetitle,
-      tags: null,
-      description: noteDescription,
-      date: choosenDate,
-      reminderTime: null,
-      
-    );
-    setState(() {
-      _userNotes.add(newNote);
-    });
-  }
+  // final List<Note> _userNotes = [
+  //  Note(
+  //   id: '1',
+  //   date: DateTime.now(),
+  //   description:
+  //       'this is my best day ever, i had spent my day with my grandparents in park,and like ia am playing with my friend like sam dam pan and folkeor with cruse and mission impossible',
+  //   title: 'One of the best day',
+  //   reminderTime: '18 mar, 8:00pm',
+  //   tags: ['nice', 'happiest', 'preety', 'cool', 'amazing'],
+  // ),
+  // ];
+
+  // void _addNewNote(
+  //   String notetitle,
+  //   String noteDescription,
+  //   DateTime choosenDate,
+  // ) {
+  //   final newNote = Note(
+  //     id: DateTime.now().toString(),
+  //     title: notetitle,
+  //     tags: null,
+  //     description: noteDescription,
+  //     date: DateTime.now(),
+  //     reminderTime: null,
+  //   );
+  //   setState(() {
+  //     _userNotes.add(newNote);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -118,18 +121,24 @@ class _HomeState extends State<Home> {
                 )),
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (ctx, items) => ListContainer(_userNotes, mediaQuery),
-                childCount: _userNotes.length,
+                (ctx, items) {
+                  print('total count: $items');
+                  return ListContainerItem(
+                    note: userNotes[items],
+                    query: mediaQuery,
+                    key: ValueKey(userNotes[items].id),
+                  );
+                },
+                childCount: userNotes.length,
               ),
             )
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () 
-         {
+          onPressed: () {
             Navigator.of(context)
-                .push(MaterialPageRoute(builder: (ctx) => NewEditScreen(_addNewNote)));
-          } ,
+                .push(MaterialPageRoute(builder: (ctx) => NewEditScreen()));
+          },
           backgroundColor: Theme.of(context).primaryColor,
           splashColor: Theme.of(context).primaryColor.withOpacity(.5),
           child: Icon(

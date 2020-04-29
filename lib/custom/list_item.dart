@@ -163,7 +163,7 @@ class _ListContainerItemState extends State<ListContainerItem> {
                         color: MyColors.greenCustom,
                       ),
                       Text(
-                        widget.note.reminderTime,
+                        widget.note.reminderTime == null?'no reminder':widget.note.reminderTime,
                         style: TextStyle(fontSize: 18),
                       )
                     ],
