@@ -4,7 +4,6 @@ import 'package:moomi/custom/list_item.dart';
 import '../screens/edit_new_creen.dart';
 import '../custom/custom_colors.dart';
 import '../models/note.dart';
-import '../custom/list_container.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -122,16 +121,24 @@ class _HomeState extends State<Home> {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (ctx, items) {
-                  print('total count: $items');
-                  return ListContainerItem(
-                    note: userNotes[items],
-                    query: mediaQuery,
-                    key: ValueKey(userNotes[items].id),
+                  // print('total count: $items');
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (cts) => NewEditScreen(),
+                        settings: RouteSettings(arguments: items)
+                      ));
+                    },
+                    child: ListContainerItem(
+                      note: userNotes[items],
+                      query: mediaQuery,
+                      key: ValueKey(userNotes[items].id),
+                    ),
                   );
                 },
                 childCount: userNotes.length,
               ),
-            )
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(

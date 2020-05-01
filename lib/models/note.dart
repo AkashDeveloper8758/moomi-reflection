@@ -4,7 +4,7 @@ class Note {
   final String id;
   final String title;
   final String description;
-  final List<String> tags;
+  final Map<String, String> tags;
   final DateTime date;
   final String reminderTime;
   Note({
@@ -19,21 +19,23 @@ class Note {
 
 class GenData {
   final String userName;
-  final List<String> tags;
+  final Map<String, String> tags;
   GenData({this.userName, this.tags});
 }
 
-final GenData generalData = GenData(tags: [
-  'All',
-  'good',
-  'bad news',
-  'cool guy',
-  'top class',
-  'fight day',
-  'relax day',
-  'sad day'
-], userName: 'akash');
-
+final GenData generalData = GenData(
+  tags: {
+    '1': 'All',
+    '2': 'good',
+    '3': 'bad news',
+    '4': 'cool guy',
+    '5': 'dangerous',
+    '6': 'puffy',
+    '7': 'beautiful',
+    '8': 'lovely',
+  },
+  userName: 'akash',
+);
 
 final List<Note> userNotes = [
   Note(
@@ -43,8 +45,11 @@ final List<Note> userNotes = [
         'this is my best day ever, i had spent my day with my grandparents in park,and like ia am playing with my friend like sam dam pan and folkeor with cruse and mission impossible',
     title: 'One of the best day',
     reminderTime: '18 mar, 8:00pm',
-    tags: ['nice', 'happiest', 'preety', 'cool', 'amazing'],
+    tags: {
+    '5': 'dangerous',
+    '6': 'puffy',
+    '7': 'beautiful',
+    '8': 'lovely',
+  },
   ),
-  
-  
 ];

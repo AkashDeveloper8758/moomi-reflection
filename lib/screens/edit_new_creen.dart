@@ -17,79 +17,130 @@ class NewEditScreen extends StatefulWidget {
 class _NewEditScreenState extends State<NewEditScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  DateTime _selectedDate;
+  // DateTime _selectedDate;
+  Map<String, String> tagsListItems = {};
+  var check = false;
+  var noteItem;
+  var updateMode = false;
+
+  @override
+  void didChangeDependencies() {
+    if (!check) {
+      final routeData = ModalRoute.of(context).settings.arguments as int;
+      noteItem = routeData;
+      if (noteItem != null) {
+        var myNote = userNotes[noteItem];
+        tagsListItems.addAll(myNote.tags);
+        _titleController.text = myNote.title;
+        _descriptionController.text = myNote.description;
+        updateMode = true;
+      }
+      tagList(); //calling tagList from didChangeDependencies
+      super.didChangeDependencies();
+      check = true;
+    }
+  }
+
+  void _getSelectedTags(String tag, String tagId) {
+    if (tagsListItems.containsKey(tagId))
+      tagsListItems.remove(tagId);
+    else
+      tagsListItems.addAll({
+        tagId: tag,
+      });
+
+    // print('tag list : $tagsListItems');
+  }
 
   final List<Widget> tagsWidgetList = [];
 
   void tagList() {
-    generalData.tags
-        .map(
-          (item) => {
-            //  print('item: $item'),
-            tagsWidgetList.add(
-              Tags(item),
-            ),
-          },
-        )
-        .toList();
-  }
+    var tempTagsItems = [];
+    if (tagsListItems.isNotEmpty) {
+      tagsListItems.forEach((k, v) => {
+            tempTagsItems.add(k),
+            tagsWidgetList.add(Tags(
+              tagName: v,
+              tagId: k,
+              getTag: _getSelectedTags,
+              isSelected: true,
+            )),
+            // print('temp tags items : $tempTagsItems')
+          });
+    }
+    generalData.tags.forEach((k, v) => {
+          if (!tempTagsItems.contains(k))
+            {
+              tempTagsItems.add(k),
+              tagsWidgetList.add(Tags(
+                tagName: v,
+                tagId: k,
+                getTag: _getSelectedTags,
+                isSelected: false,
+              )),
+            },
 
-  @override
-  void initState() {
-    print('calling tagList');
-    tagList();
-    super.initState();
+        });
   }
 
   void _submitData() {
-    // if (_descriptionController.text.isEmpty) {
-    //   return;
-    // }
+    if (_descriptionController.text.isEmpty) {
+      return;
+    }
     final enterdTitle = _titleController.text;
     final enterdDiscription = _descriptionController.text;
 
     if (enterdTitle.isEmpty || enterdDiscription.isEmpty) {
       return;
     }
-    userNotes.add(
-      Note(
-          date: DateTime.now(),
-          title: enterdTitle,
-          description: enterdDiscription,
-          tags: [
-            'bad news',
-            'cool guy',
-            'top class',
-            'fight day',
-          ],
-          reminderTime: null,
-          id: DateTime.now().toIso8601String()),
-    );
+    if (tagsListItems == null) tagsListItems = {'X': 'X'};
+    if (updateMode) {
+      userNotes[noteItem] = Note(
+        date: DateTime.now(),
+        title: enterdTitle,
+        description: enterdDiscription,
+        tags: tagsListItems,
+        reminderTime: null,
+        id: DateTime.now().toIso8601String(),
+      );
+
+    } else {
+      userNotes.add(
+        Note(
+            date: DateTime.now(),
+            title: enterdTitle,
+            description: enterdDiscription,
+            tags: tagsListItems,
+            reminderTime: null,
+            id: DateTime.now().toIso8601String()),
+      );
+
+    }
     Navigator.of(context).pop();
   }
 
-  void _presentDatePicker() async {
-    final pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2019),
-      lastDate: DateTime.now(),
-    );
-    if (pickedDate == null) {
-      return;
-    }
-    setState(() {
-      _selectedDate = pickedDate;
-    });
-  }
+  // void _presentDatePicker() async {
+  //   final pickedDate = await showDatePicker(
+  //     context: context,
+  //     initialDate: DateTime.now(),
+  //     firstDate: DateTime(2019),
+  //     lastDate: DateTime.now(),
+  //   );
+  //   if (pickedDate == null) {
+  //     return;
+  //   }
+  //   setState(() {
+  //     _selectedDate = pickedDate;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Create Note',
-          style: TextStyle(color: MyColors.textDark),
+          updateMode ? 'Update Note' : 'Create Note',
+          style: TextStyle(color: MyColors.textDark, fontSize: 24),
         ),
         backgroundColor: MyColors.customBackgound,
         elevation: 0,
@@ -108,10 +159,7 @@ class _NewEditScreenState extends State<NewEditScreen> {
             margin: EdgeInsets.only(top: 20),
             decoration: BoxDecoration(
                 color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                      blurRadius: 1, color: Colors.black, offset: Offset(0, 0))
-                ],
+                border: Border.all(width: 1, color: Colors.black),
                 borderRadius: BorderRadius.circular(8)),
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
@@ -160,36 +208,10 @@ class _NewEditScreenState extends State<NewEditScreen> {
           ),
           Container(
             margin: EdgeInsets.only(top: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: tagsWidgetList,
-                ),
-                // Column(
-                //   children: <Widget>[
-                //     Text(
-                //       _selectedDate == null
-                //           ? 'No Date Chosen!'
-                //           : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
-                //     ),
-                //     FlatButton(
-                //       color: Theme.of(context).primaryColor,
-                //       textColor: Colors.white,
-                //       child: Text(
-                //         'Choose Date',
-                //         style: TextStyle(
-                //           fontWeight: FontWeight.bold,
-                //         ),
-                //       ),
-                //       onPressed: _presentDatePicker,
-                //     ),
-                //   ],
-                // ),
-              ],
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: tagsWidgetList,
             ),
           )
         ],
