@@ -21,22 +21,24 @@ class _NewEditScreenState extends State<NewEditScreen> {
   // DateTime _selectedDate;
   Map<String, String> tagsListItems = {};
   var check = false;
-  var noteItem;
   var updateMode = false;
+  Note updatingNote;
 
   @override
   void didChangeDependencies() {
-    if (!check) {
-      final routeData = ModalRoute.of(context).settings.arguments as int;
-      noteItem = routeData;
-      if (noteItem != null) {
-        var myNote = userNotes[noteItem];
-        tagsListItems.addAll(myNote.tags);
-        _titleController.text = myNote.title;
-        _descriptionController.text = myNote.description;
+    if (!check) { 
+      final routeData = ModalRoute.of(context).settings.arguments as Note;
+      updatingNote = routeData;
+
+      if (updatingNote !=null) {
+        // print('UPDATE MODE');
+        // print('updating note: $updatingNote');
+        tagsListItems.addAll(updatingNote.tags);
+        _titleController.text = updatingNote.title;
+        _descriptionController.text = updatingNote.description;
         updateMode = true;
       }
-      tagList(); //calling tagList from didChangeDependencies
+      tagList(); //calling tagList from didChangeDependencies as calling from intiState is boilerplate,we need context
       super.didChangeDependencies();
       check = true;
     }
@@ -49,8 +51,6 @@ class _NewEditScreenState extends State<NewEditScreen> {
       tagsListItems.addAll({
         tagId: tag,
       });
-
-    // print('tag list : $tagsListItems');
   }
 
   final List<Widget> tagsWidgetList = [];
@@ -110,7 +110,7 @@ class _NewEditScreenState extends State<NewEditScreen> {
           description: enterdDiscription,
           tags: tagsListItems,
           reminderTime: null,
-          id: DateTime.now().toIso8601String(),
+          id: updatingNote.id,
         ),
       );
     } else {

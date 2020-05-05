@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:moomi/custom/custom_colors.dart';
 import 'package:moomi/models/note.dart';
 
-class ListContainerItem extends StatefulWidget {
+class ListContainerItem extends StatelessWidget {
   const ListContainerItem({
     Key key,
     @required this.note,
@@ -16,21 +16,16 @@ class ListContainerItem extends StatefulWidget {
   final query;
 
   @override
-  _ListContainerItemState createState() => _ListContainerItemState();
-}
-
-class _ListContainerItemState extends State<ListContainerItem> {
-  @override
   Widget build(BuildContext context) {
-    final screenWidth = widget.query.size.width;
-      final tagValue = widget.note.tags.values.toList();
+    final screenWidth = query.size.width;
+    final tagValue = note.tags.values.toList();
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: 250,
       ),
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.only(left:0,right:0,top:8),
+        padding: EdgeInsets.only(left: 0, right: 0, top: 8),
         margin: EdgeInsets.all(8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
@@ -60,7 +55,7 @@ class _ListContainerItemState extends State<ListContainerItem> {
                             Container(
                               padding: EdgeInsets.all(4),
                               child: Text(
-                                widget.note.title,
+                                note.title,
                                 style: TextStyle(
                                     fontSize: screenWidth > 380 ? 26 : 22,
                                     color: MyColors.textDark,
@@ -73,7 +68,7 @@ class _ListContainerItemState extends State<ListContainerItem> {
                               child: Container(
                                 padding: EdgeInsets.all(4),
                                 child: Text(
-                                  widget.note.description,
+                                  note.description,
                                   style: TextStyle(
                                     fontSize: 18,
                                     color: MyColors.textMedium,
@@ -101,7 +96,7 @@ class _ListContainerItemState extends State<ListContainerItem> {
                                   color: Theme.of(context).primaryColor,
                                   borderRadius: BorderRadius.circular(4)),
                               child: Text(
-                                DateFormat('MMMd').format(widget.note.date),
+                                DateFormat('MMMd').format(note.date),
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.white,
@@ -111,7 +106,7 @@ class _ListContainerItemState extends State<ListContainerItem> {
                             Container(
                               height: constraints.maxHeight * .6,
                               child: ListView.builder(
-                                  itemCount: widget.note.tags.length,
+                                  itemCount: note.tags.length,
                                   itemBuilder: (ctx, item) {
                                     return Column(
                                       children: <Widget>[
@@ -147,7 +142,9 @@ class _ListContainerItemState extends State<ListContainerItem> {
                 Container(
                   decoration: BoxDecoration(
                       color: MyColors.textMedium,
-                      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(18),bottomRight: Radius.circular(18))),
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(18),
+                          bottomRight: Radius.circular(18))),
                   alignment: Alignment.centerLeft,
                   height: constraints.maxHeight * .2,
                   child: Row(
@@ -165,10 +162,10 @@ class _ListContainerItemState extends State<ListContainerItem> {
                         color: MyColors.greenCustom,
                       ),
                       Text(
-                        widget.note.reminderTime == null
+                        note.reminderTime == null
                             ? 'no reminder'
-                            : widget.note.reminderTime,
-                        style: TextStyle(fontSize: 18,color:Colors.white),
+                            : note.reminderTime,
+                        style: TextStyle(fontSize: 18, color: Colors.white),
                       )
                     ],
                   ),

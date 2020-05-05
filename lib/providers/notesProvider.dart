@@ -34,11 +34,10 @@ class NotesProvider extends ChangeNotifier {
   }
 
   Future<void> getAllNotes() async {
-
     var dataList = await DbHelper.getNotes(notesTable);
-    List<Note> loadedNotes = [];     
+    List<Note> loadedNotes = [];
     loadedNotes = dataList.map((item) {
-      Map<String,String> jsonTags = Map.castFrom(jsonDecode(item[Safe.tags]));
+      Map<String, String> jsonTags = Map.castFrom(jsonDecode(item[Safe.tags]));
       return Note(
         id: item[Safe.id],
         title: item[Safe.title],
@@ -48,7 +47,7 @@ class NotesProvider extends ChangeNotifier {
         reminderTime: item[Safe.reminderTime],
       );
     }).toList();
-    print('final length : ${loadedNotes.length}');
+    //print('final length : ${loadedNotes.length}');
 
     if (loadedNotes.isEmpty) return;
     _notes = loadedNotes;
@@ -61,8 +60,18 @@ class NotesProvider extends ChangeNotifier {
     return checkUpdate;
   }
 
-  Future<void> deleteNote() async {
-    final checkDelete = await DbHelper.removeNote(notesTable);
+  Future<void> deleteNote(String id) async {
+    var checkDelete;
+    checkDelete = await DbHelper.removeNote(notesTable, id);
+
     print('>>> Deleting Note: STATUS: $checkDelete');
+    _notes.removeWhere((note) => note.id == id);
+    notifyListeners();
+    return checkDelete;
   }
+   Note removeTemperory(int index){
+    var note = _notes.removeAt(index);
+     notifyListeners();
+     return note;
+   }
 }

@@ -31,15 +31,19 @@ class DbHelper {
     final newDb = await DbHelper.database();
     return newDb.query(tableName);
   }
-  static Future<int> setNotes(String tableName,Map<String,dynamic> note) async{
-    final  newDb = await DbHelper.database();
-    var updateInt =  await newDb.update(tableName, note,where: '${Safe.id} = ?',whereArgs: [note[Safe.id]]);
+
+  static Future<int> setNotes(
+      String tableName, Map<String, dynamic> note) async {
+    final newDb = await DbHelper.database();
+    var updateInt = await newDb.update(tableName, note,
+        where: '${Safe.id} = ?', whereArgs: [note[Safe.id]]);
     print('update int return is : $updateInt');
     return updateInt;
   }
-  static Future<int> removeNote(String tableName) async {
+
+  static Future<int> removeNote(String tableName, String id) async {
     final newDb = await DbHelper.database();
-    return newDb.delete(tableName);
+    return newDb.delete(tableName, where: '${Safe.id} =?', whereArgs: [id]);
   }
   // Future close() async => await DbHelper.database() ..close();
 }
