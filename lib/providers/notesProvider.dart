@@ -26,50 +26,29 @@ class NotesProvider extends ChangeNotifier {
     return [..._notes];
   }
 
-  void addNote(Note note)async {
+  void addNote(Note note) async {
     _notes.add(note);
     notifyListeners();
-    var checkAdd = await  DbHelper.insertNote(notesTable, note.toMap());
+    var checkAdd = await DbHelper.insertNote(notesTable, note.toMap());
     print('>>> adding note:STATUS: $checkAdd');
   }
 
   Future<void> getAllNotes() async {
-    
-    
-   
+
     var dataList = await DbHelper.getNotes(notesTable);
-    //print('... getting notes: $dataList');
-    // print('... TITLE: ${dataList[0]['id']}');
-    // print('... TITLE: form safe${dataList[0][Safe.id]}');
-    List<Note> loadedNotes = [];
-    // loadedNotes[0].tags.forEach((k,v){
-    //   print('key: $k value: $v');
-    // });
-    var mapArgs = DateTime.parse(dataList[0][Safe.date]);
-    //print('map args: $mapArgs');
-    // if(mapArgs is DateTime)
-    // print('date are DateTime');
-    // else print('TERMINATE X');
-    // print('decoded string is: $jsonEncode(dataList[0][Safe.tags] as Map}');
-
-    // if(json.decode(dataList[0][Safe.tags]) is Map){
-    //   print('tags are MAP HURREY !!');
-    // }else print('TERMINATE M');
-
+    List<Note> loadedNotes = [];     
     loadedNotes = dataList.map((item) {
-      print('.... inside map');
-   
-      return Note(       
-         id: item[Safe.id],
+      Map<String,String> jsonTags = Map.castFrom(jsonDecode(item[Safe.tags]));
+      return Note(
+        id: item[Safe.id],
         title: item[Safe.title],
         description: item[Safe.description],
-        tags: jsonDecode(item[Safe.tags]),
-        date: DateTime.parse(item[Safe.date]) ,
+        tags: jsonTags,
+        date: DateTime.parse(item[Safe.date]),
         reminderTime: item[Safe.reminderTime],
       );
-      // print('reached after addition ');
     }).toList();
-   // print('final length : ${loadedNotes.length}');
+    print('final length : ${loadedNotes.length}');
 
     if (loadedNotes.isEmpty) return;
     _notes = loadedNotes;
