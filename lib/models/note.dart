@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:moomi/helper/safe.dart';
 
 class Note {
   final String id;
@@ -15,6 +18,17 @@ class Note {
     @required this.date,
     @required this.reminderTime,
   });
+
+  Map<String,dynamic> toMap(){
+    return <String,dynamic>{
+      Safe.id: id,
+      Safe.title:title,
+      Safe.description: description,
+      Safe.tags: json.encode(tags),
+      Safe.reminderTime: 'no reminder',
+      Safe.date: date.toString()
+    };
+  }
 }
 
 class GenData {

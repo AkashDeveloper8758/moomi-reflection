@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../custom/custom_colors.dart';
 import '../custom/tags.dart';
 import '../models/note.dart';
+import '../providers/notesProvider.dart';
 
 class NewEditScreen extends StatefulWidget {
   // final Function addNote;
@@ -79,7 +80,6 @@ class _NewEditScreenState extends State<NewEditScreen> {
                 isSelected: false,
               )),
             },
-
         });
   }
 
@@ -95,17 +95,35 @@ class _NewEditScreenState extends State<NewEditScreen> {
     }
     if (tagsListItems == null) tagsListItems = {'X': 'X'};
     if (updateMode) {
-      userNotes[noteItem] = Note(
-        date: DateTime.now(),
-        title: enterdTitle,
-        description: enterdDiscription,
-        tags: tagsListItems,
-        reminderTime: null,
-        id: DateTime.now().toIso8601String(),
+      // userNotes[noteItem] = Note(
+      //   date: DateTime.now(),
+      //   title: enterdTitle,
+      //   description: enterdDiscription,
+      //   tags: tagsListItems,
+      //   reminderTime: null,
+      //   id: DateTime.now().toIso8601String(),
+      // );
+      Provider.of<NotesProvider>(context,listen: false).updateNote(
+        Note(
+          date: DateTime.now(),
+          title: enterdTitle,
+          description: enterdDiscription,
+          tags: tagsListItems,
+          reminderTime: null,
+          id: DateTime.now().toIso8601String(),
+        ),
       );
-
     } else {
-      userNotes.add(
+      // userNotes.add(
+      //   Note(
+      //       date: DateTime.now(),
+      //       title: enterdTitle,
+      //       description: enterdDiscription,
+      //       tags: tagsListItems,
+      //       reminderTime: null,
+      //       id: DateTime.now().toIso8601String()),
+      // );
+      Provider.of<NotesProvider>(context, listen: false).addNote(
         Note(
             date: DateTime.now(),
             title: enterdTitle,
@@ -114,7 +132,6 @@ class _NewEditScreenState extends State<NewEditScreen> {
             reminderTime: null,
             id: DateTime.now().toIso8601String()),
       );
-
     }
     Navigator.of(context).pop();
   }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart' hide Color;
 import 'package:moomi/custom/list_item.dart';
+import 'package:provider/provider.dart';
 
 import '../screens/edit_new_creen.dart';
 import '../custom/custom_colors.dart';
 import '../models/note.dart';
+import '../providers/notesProvider.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -46,7 +48,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    //  print(mediaQuery.size.width);
+
     return SafeArea(
       child: Scaffold(
         body: CustomScrollView(
@@ -118,26 +120,59 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 )),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (ctx, items) {
-                  // print('total count: $items');
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (cts) => NewEditScreen(),
-                        settings: RouteSettings(arguments: items)
-                      ));
-                    },
-                    child: ListContainerItem(
-                      note: userNotes[items],
-                      query: mediaQuery,
-                      key: ValueKey(userNotes[items].id),
-                    ),
-                  );
-                },
-                childCount: userNotes.length,
-              ),
+            FutureBuilder(
+              future: Provider.of<NotesProvider>(context, listen: false)
+                  .getAllNotes(),
+              builder: (ctx, snapshot) {
+                return snapshot.connectionState == ConnectionState.waiting
+                    ? SliverToBoxAdapter(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    : Consumer<NotesProvider>(
+                        builder: (ctx, notesItem, ch) {
+                          print(
+                              'home : notes length : ${notesItem.notes.length}');
+
+                          return notesItem.notes.length > 0
+                              ? SliverList(
+                                  delegate: SliverChildBuilderDelegate(
+                                    (ctx, i) {
+                                      print('total count: $i');
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (cts) =>
+                                                      NewEditScreen(),
+                                                  settings: RouteSettings(
+                                                      arguments: i)));
+                                        },
+                                        child: ListContainerItem(
+                                          note: notesItem.notes[i],
+                                          query: mediaQuery,
+                                          key: ValueKey(notesItem.notes[i].id),
+                                        ),
+                                      );
+                                    },
+                                    childCount: notesItem.notes.length,
+                                  ),
+                                )
+                              : SliverToBoxAdapter(
+                                  child: Center(
+                                    heightFactor: 16,
+                                      child: Text(
+                                    'no notes found yet !!',
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold),
+                                  )),
+                                );
+                        },
+                      );
+              },
             ),
           ],
         ),
