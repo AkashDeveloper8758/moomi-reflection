@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:moomi/providers/generalDataProvider.dart';
 import 'package:moomi/providers/notesProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -13,8 +14,15 @@ class MyApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.grey[800]));
 
-    return ChangeNotifierProvider.value(
-      value: NotesProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(
+          value: NotesProvider(),
+        ),
+        ChangeNotifierProvider.value(
+          value: GeneralDataProvider(),
+        ),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(

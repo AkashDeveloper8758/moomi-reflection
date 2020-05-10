@@ -5,8 +5,9 @@ class Tags extends StatefulWidget {
   final String tagName, tagId;
   final Function getTag;
   final bool isSelected;
-  Tags({this.tagName, this.tagId, this.getTag,this.isSelected});
-
+  final Key key;
+  Tags({this.key,this.tagName, this.tagId, this.getTag,this.isSelected});
+  
   @override
   _TagsState createState() => _TagsState();
 }
@@ -18,9 +19,7 @@ class _TagsState extends State<Tags> {
   _tapedState(String tagValue, String tagId) {
     setState(() {
       taped = !taped;
-      // print('<STATE CHANGE TAPS>: $taped');
       widget.getTag(tagValue, tagId);
-      //   print('tag:tag added : $tagValue');
     });
 
   }
@@ -31,8 +30,8 @@ class _TagsState extends State<Tags> {
     taped = widget.isSelected;
     check = false;
     }
-
     return Container(
+      key: widget.key,
       padding: EdgeInsets.only(top: 4, bottom: 4, left: 12, right: 8),
       decoration: BoxDecoration(
           color: taped ? Theme.of(context).primaryColor.withOpacity(.8) : Colors.white,
@@ -53,7 +52,7 @@ class _TagsState extends State<Tags> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color:
-                    taped ? Colors.red.withOpacity(1) : MyColors.greenCustom,
+                    taped? Colors.red.withOpacity(1) : MyColors.greenCustom,
               ),
               child: Icon(
                   taped ? Icons.remove : Icons.add,

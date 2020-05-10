@@ -37,6 +37,7 @@ class NotesProvider extends ChangeNotifier {
     var dataList = await DbHelper.getNotes(notesTable);
     List<Note> loadedNotes = [];
     loadedNotes = dataList.map((item) {
+     // print('tags items form note fetch: ${item[Safe.tags]}');
       Map<String, String> jsonTags = Map.castFrom(jsonDecode(item[Safe.tags]));
       return Note(
         id: item[Safe.id],

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,6 +7,7 @@ import '../custom/custom_colors.dart';
 import '../custom/tags.dart';
 import '../models/note.dart';
 import '../providers/notesProvider.dart';
+import '../providers/generalDataProvider.dart';
 
 class NewEditScreen extends StatefulWidget {
   // final Function addNote;
@@ -18,33 +21,47 @@ class NewEditScreen extends StatefulWidget {
 class _NewEditScreenState extends State<NewEditScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _tagController = TextEditingController();
   // DateTime _selectedDate;
   Map<String, String> tagsListItems = {};
   var check = false;
   var updateMode = false;
+  var tagTic = false;
+  int lastKey;
   Note updatingNote;
-
+  FocusNode _focusNode = FocusNode();
   @override
   void didChangeDependencies() {
-    if (!check) { 
+    Provider.of<GeneralDataProvider>(context,listen: false).getGenData();
+    if (!check) {
       final routeData = ModalRoute.of(context).settings.arguments as Note;
       updatingNote = routeData;
-
-      if (updatingNote !=null) {
-        // print('UPDATE MODE');
-        // print('updating note: $updatingNote');
+      if (updatingNote != null) {
         tagsListItems.addAll(updatingNote.tags);
         _titleController.text = updatingNote.title;
         _descriptionController.text = updatingNote.description;
         updateMode = true;
       }
-      tagList(); //calling tagList from didChangeDependencies as calling from intiState is boilerplate,we need context
+      tagList();
       super.didChangeDependencies();
       check = true;
     }
   }
 
+  @override
+  void initState() {
+    _focusNode.addListener(_onTagAddFocusChange);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   void _getSelectedTags(String tag, String tagId) {
+    print('edit called **');
     if (tagsListItems.containsKey(tagId))
       tagsListItems.remove(tagId);
     else
@@ -53,23 +70,33 @@ class _NewEditScreenState extends State<NewEditScreen> {
       });
   }
 
+  _onTagAddFocusChange() {
+    setState(() {
+      tagTic = _focusNode.hasFocus;
+    });
+  }
+
   final List<Widget> tagsWidgetList = [];
 
   void tagList() {
+
     var tempTagsItems = [];
+    tagsWidgetList.clear();
     if (tagsListItems.isNotEmpty) {
       tagsListItems.forEach((k, v) => {
+            print('tagListItem keys: $k'),
             tempTagsItems.add(k),
             tagsWidgetList.add(Tags(
+              key: ValueKey(k),
               tagName: v,
               tagId: k,
               getTag: _getSelectedTags,
               isSelected: true,
             )),
-            // print('temp tags items : $tempTagsItems')
           });
     }
-    generalData.tags.forEach((k, v) => {
+    // print('tempListItem:BEFORE: $tempTagsItems');
+    generalDataStore.tags.forEach((k, v) => {
           if (!tempTagsItems.contains(k))
             {
               tempTagsItems.add(k),
@@ -95,15 +122,7 @@ class _NewEditScreenState extends State<NewEditScreen> {
     }
     if (tagsListItems == null) tagsListItems = {'X': 'X'};
     if (updateMode) {
-      // userNotes[noteItem] = Note(
-      //   date: DateTime.now(),
-      //   title: enterdTitle,
-      //   description: enterdDiscription,
-      //   tags: tagsListItems,
-      //   reminderTime: null,
-      //   id: DateTime.now().toIso8601String(),
-      // );
-      Provider.of<NotesProvider>(context,listen: false).updateNote(
+      Provider.of<NotesProvider>(context, listen: false).updateNote(
         Note(
           date: DateTime.now(),
           title: enterdTitle,
@@ -114,15 +133,6 @@ class _NewEditScreenState extends State<NewEditScreen> {
         ),
       );
     } else {
-      // userNotes.add(
-      //   Note(
-      //       date: DateTime.now(),
-      //       title: enterdTitle,
-      //       description: enterdDiscription,
-      //       tags: tagsListItems,
-      //       reminderTime: null,
-      //       id: DateTime.now().toIso8601String()),
-      // );
       Provider.of<NotesProvider>(context, listen: false).addNote(
         Note(
             date: DateTime.now(),
@@ -136,20 +146,29 @@ class _NewEditScreenState extends State<NewEditScreen> {
     Navigator.of(context).pop();
   }
 
-  // void _presentDatePicker() async {
-  //   final pickedDate = await showDatePicker(
-  //     context: context,
-  //     initialDate: DateTime.now(),
-  //     firstDate: DateTime(2019),
-  //     lastDate: DateTime.now(),
-  //   );
-  //   if (pickedDate == null) {
-  //     return;
-  //   }
-  //   setState(() {
-  //     _selectedDate = pickedDate;
-  //   });
-  // }
+  _onTagAdded() async{
+    var tag = _tagController.text;
+    if (tag.isEmpty && tag.length > 2) return;
+    String key;
+    if (tag.length > 3) {
+      key = tag.substring(0, 3) + Random().nextInt(100).toString();
+      // print(key);
+    } else
+      key = tag[0] + tag[1] + Random(200).nextInt(200).toString();
+
+    setState(() {
+      tagsListItems = {...tagsListItems, key: tag};
+    });
+
+    tagList();
+    var newGenData =
+        GenData(id: 'generalId', userName: generalDataStore.userName, tags: {
+      key: tag,
+      ...generalDataStore.tags,
+    });
+   await Provider.of<GeneralDataProvider>(context,listen: false).setGenData(newGenData);
+    _tagController.text = '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -228,9 +247,72 @@ class _NewEditScreenState extends State<NewEditScreen> {
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: tagsWidgetList,
+              children: [
+                ...tagsWidgetList,
+                Container(
+                  height: 60,
+                  alignment: Alignment.centerLeft,
+                  // alignment: Alignment.centerRight,s
+                  width: 200,
+                  // margin: EdgeInsets.only(
+                  //     right: MediaQuery.of(context).size.width * .4),
+                  child: Stack(
+                    alignment: Alignment.centerRight,
+                    children: [
+                      TextField(
+                        controller: _tagController,
+                        focusNode: _focusNode,
+                        onSubmitted: (_) {},
+                        maxLength: 15,
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold),
+                        cursorColor: Theme.of(context).primaryColor,
+                        decoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 8),
+                            // labelStyle: TextStyle(fontSize: 26),
+                            filled: false,
+                            hintText: 'Enter you new tag',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(48),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                  width: 2),
+                            )),
+                      ),
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: tagTic
+                            ? GestureDetector(
+                                onTap: () {
+                                  FocusScopeNode focusScopeNode =
+                                      FocusScope.of(context);
+                                  if (!focusScopeNode.hasPrimaryFocus) {
+                                    print('primary focus loose');
+                                    focusScopeNode.unfocus();
+                                  }
+                                  _onTagAdded();
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Theme.of(context).primaryColor),
+                                  child: Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              )
+                            : SizedBox(),
+                      )
+                    ],
+                  ),
+                )
+              ],
             ),
-          )
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -238,7 +320,7 @@ class _NewEditScreenState extends State<NewEditScreen> {
         backgroundColor: Theme.of(context).primaryColor,
         icon: Icon(Icons.save, color: Colors.white),
         label: Text(
-          'Save',
+          updateMode ? 'Update' : 'Save',
           style: TextStyle(fontSize: 16, color: Colors.white),
         ),
       ),

@@ -29,7 +29,10 @@ class ListContainerItem extends StatelessWidget {
         margin: EdgeInsets.all(8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(width: 1, color: Theme.of(context).primaryColor),
+         // border: Border.all(width: 1, color: Theme.of(context).primaryColor),
+         boxShadow: [
+           BoxShadow(blurRadius: 5,color: Colors.black38,offset:Offset(0,0))
+         ],
           color: Colors.white,
         ),
         // color: Colors.blue,

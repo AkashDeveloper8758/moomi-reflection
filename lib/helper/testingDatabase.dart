@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:moomi/helper/safe.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart' as sql;
@@ -7,7 +5,7 @@ import 'package:sqflite/sqflite.dart' as sql;
 class DbHelper {
   static Future<sql.Database> database() async {
     var dbPath = await sql.getDatabasesPath();
-    return await sql.openDatabase(p.join(dbPath, 'notesmoomi.db'),
+    return await sql.openDatabase(p.join(dbPath, 'notes.db'),
         onCreate: (db, version) async {
       await db.execute('''
       CREATE TABLE userNotes(
@@ -18,15 +16,13 @@ class DbHelper {
             ${Safe.date} TEXT,
             ${Safe.reminderTime} TEXT)
             ''');
-            print('user notes database created: ***');
     await db.execute('''
         CREATE TABLE generalData(
           ${Safe.generalId} TEXT PRIMARY KEY,
           ${Safe.userName} TEXT,
-          ${Safe.tagsList} TEXT)
+          ${Safe.tagsList} TEXT,
+        )
         ''');
-    print('general note database created: ***');
-
     }, version: 1);
   }
 
@@ -60,27 +56,18 @@ class DbHelper {
   static Future<int> setGeneralData(
       String tableName, Map<String, String> generalData) async {
     final newDb = await DbHelper.database();
-    // var safeData = generalData.cast<String,String>();
-    print('add check return : $generalData');
     return newDb.insert(tableName, generalData);
   }
 
   static Future<int> updateGenData(
       String tableName, Map<String, String> generalData) async {
     final newDb = await DbHelper.database();
-    // var safeData = generalData.cast<String,String>();
     // return newDb.update(tableName, {Safe.tagsList:generalData},where: '${Safe.generalId}=?',whereArgs: [generalData['id']]);
-    var updatedGen = newDb.update(tableName,generalData);
-    // print('Update check return : $generalData');
-    return updatedGen;
+    return newDb.update(tableName, {Safe.tagsList: generalData});
   }
 
-  static Future<List<Map<String, dynamic>>> getGenData(String tableName) async {
+  static Future<List<Map<String, String>>> getGenData(String tableName) async {
     final newDb = await DbHelper.database();
     return newDb.query(tableName);
-  }
-  static Future<int> deleteGenData(String table)async{
-    final newDb = await DbHelper.database();
-    newDb.delete(table);
   }
 }

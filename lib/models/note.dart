@@ -34,10 +34,22 @@ class Note {
 class GenData {
   final String userName;
   final Map<String, String> tags;
-  GenData({this.userName, this.tags});
+  final String id;
+  GenData({this.userName, this.tags,this.id});
+  
+  Map<String,String> toMap(){
+    var toReturn =  <String,String>{
+      Safe.generalId:id,
+      Safe.userName:userName,
+      Safe.tagsList:json.encode(tags),
+    };
+    //print("from NOTE => data before database: $toReturn");
+    return toReturn;
+  }
 }
-
-final GenData generalData = GenData(
+// GenData generalDataStore;
+ GenData generalDataStore = GenData(
+  id:Safe.uniqueGenId,
   tags: {
     '1': 'All',
     '2': 'good',
@@ -48,7 +60,7 @@ final GenData generalData = GenData(
     '7': 'beautiful',
     '8': 'lovely',
   },
-  userName: 'akash',
+  userName: 'friend',
 );
 
 final List<Note> userNotes = [
