@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/foundation.dart';
 import 'package:moomi/helper/dbHelper.dart';
 import 'package:moomi/helper/safe.dart';
@@ -52,13 +54,14 @@ class NotesProvider extends ChangeNotifier {
 
     if (loadedNotes.isEmpty) return;
     _notes = loadedNotes;
+    userNotes = loadedNotes;
     notifyListeners();
   }
 
   Future<int> updateNote(Note note) async {
-    final checkUpdate = await DbHelper.setNotes(notesTable, note.toMap());
-    print('>>> Updating note:STATUS: $checkUpdate');
-    return checkUpdate;
+    var newNote = await DbHelper.setNotes(notesTable, note.toMap());
+    print('>>> Updating note:STATUS: $newNote');
+    return newNote;
   }
 
   Future<void> deleteNote(String id) async {

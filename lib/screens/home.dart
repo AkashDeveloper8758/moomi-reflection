@@ -14,9 +14,10 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final _searchController = TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
-  //  Provider.of<GeneralDataProvider>(context).getGenData();
+    Provider.of<GeneralDataProvider>(context,listen: false).getGenData();
     print('home REBUILD ***>');
     final mediaQuery = MediaQuery.of(context);
     return SafeArea(

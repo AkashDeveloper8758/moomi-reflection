@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:moomi/helper/safe.dart';
+import 'package:moomi/models/note.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart' as sql;
 
@@ -18,15 +19,14 @@ class DbHelper {
             ${Safe.date} TEXT,
             ${Safe.reminderTime} TEXT)
             ''');
-            print('user notes database created: ***');
-    await db.execute('''
+      print('user notes database created: ***');
+      await db.execute('''
         CREATE TABLE generalData(
           ${Safe.generalId} TEXT PRIMARY KEY,
           ${Safe.userName} TEXT,
           ${Safe.tagsList} TEXT)
         ''');
-    print('general note database created: ***');
-
+      print('general note database created: ***');
     }, version: 1);
   }
 
@@ -60,7 +60,6 @@ class DbHelper {
   static Future<int> setGeneralData(
       String tableName, Map<String, String> generalData) async {
     final newDb = await DbHelper.database();
-    // var safeData = generalData.cast<String,String>();
     print('add check return : $generalData');
     return newDb.insert(tableName, generalData);
   }
@@ -68,9 +67,7 @@ class DbHelper {
   static Future<int> updateGenData(
       String tableName, Map<String, String> generalData) async {
     final newDb = await DbHelper.database();
-    // var safeData = generalData.cast<String,String>();
-    // return newDb.update(tableName, {Safe.tagsList:generalData},where: '${Safe.generalId}=?',whereArgs: [generalData['id']]);
-    var updatedGen = newDb.update(tableName,generalData);
+    var updatedGen = newDb.update(tableName, generalData);
     // print('Update check return : $generalData');
     return updatedGen;
   }
@@ -79,7 +76,8 @@ class DbHelper {
     final newDb = await DbHelper.database();
     return newDb.query(tableName);
   }
-  static Future<int> deleteGenData(String table)async{
+
+  static Future<int> deleteGenData(String table) async {
     final newDb = await DbHelper.database();
     newDb.delete(table);
   }

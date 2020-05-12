@@ -1,5 +1,3 @@
 {
-    "markdown.trace": "verbose",
-    "C_Cpp.loggingLevel": "Debug",
     "dart.analyzerInstrumentationLogFile": null
 }

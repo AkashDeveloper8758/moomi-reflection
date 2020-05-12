@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:moomi/helper/tagsListAlgo.dart';
 import 'package:provider/provider.dart';
 
 import '../custom/custom_colors.dart';
@@ -32,8 +33,8 @@ class _NewEditScreenState extends State<NewEditScreen> {
   FocusNode _focusNode = FocusNode();
   @override
   void didChangeDependencies() {
-    Provider.of<GeneralDataProvider>(context,listen: false).getGenData();
     if (!check) {
+      print('dependencies called: EDIT SCREEN');
       final routeData = ModalRoute.of(context).settings.arguments as Note;
       updatingNote = routeData;
       if (updatingNote != null) {
@@ -79,9 +80,10 @@ class _NewEditScreenState extends State<NewEditScreen> {
   final List<Widget> tagsWidgetList = [];
 
   void tagList() {
-
-    var tempTagsItems = [];
+    print('ALL TAGS : ${generalDataStore.tags}');
+    List<String> tempTagsItems = [];
     tagsWidgetList.clear();
+    print('tag list items :MAIN: $tagsListItems');
     if (tagsListItems.isNotEmpty) {
       tagsListItems.forEach((k, v) => {
             print('tagListItem keys: $k'),
@@ -95,19 +97,24 @@ class _NewEditScreenState extends State<NewEditScreen> {
             )),
           });
     }
-    // print('tempListItem:BEFORE: $tempTagsItems');
-    generalDataStore.tags.forEach((k, v) => {
-          if (!tempTagsItems.contains(k))
-            {
-              tempTagsItems.add(k),
-              tagsWidgetList.add(Tags(
-                tagName: v,
-                tagId: k,
-                getTag: _getSelectedTags,
-                isSelected: false,
-              )),
-            },
-        });
+    var finalTags = TagsAlgo.getNotesTagsList(tempTagsItems);
+    if (finalTags.length > 0 && generalDataStore.tags.length > 0) {
+      print('generalDataStore tags are : ${generalDataStore.tags}');
+      print('final  tags are : $finalTags');
+
+      finalTags.forEach((k) => {
+            print('tagsName: ${generalDataStore.tags[k]}'),
+            // if (!tempTagsItems.contains(k))
+            //   {
+            tempTagsItems.add(k),
+            tagsWidgetList.add(Tags(
+              tagName: generalDataStore.tags[k],
+              tagId: k,
+              getTag: _getSelectedTags,
+              isSelected: false,
+            )),
+          });
+    }
   }
 
   void _submitData() {
@@ -146,7 +153,7 @@ class _NewEditScreenState extends State<NewEditScreen> {
     Navigator.of(context).pop();
   }
 
-  _onTagAdded() async{
+  _onTagAdded() async {
     var tag = _tagController.text;
     if (tag.isEmpty && tag.length > 2) return;
     String key;
@@ -166,7 +173,8 @@ class _NewEditScreenState extends State<NewEditScreen> {
       key: tag,
       ...generalDataStore.tags,
     });
-   await Provider.of<GeneralDataProvider>(context,listen: false).setGenData(newGenData);
+    await Provider.of<GeneralDataProvider>(context,listen: false).setGenData(newGenData);
+    //await Provider.of<GeneralDataProvider>(context, listen: false) .deleteGenData();
     _tagController.text = '';
   }
 
