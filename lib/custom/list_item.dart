@@ -111,28 +111,24 @@ class ListContainerItem extends StatelessWidget {
                               child: ListView.builder(
                                   itemCount: note.tags.length,
                                   itemBuilder: (ctx, item) {
-                                    return Column(
-                                      children: <Widget>[
-                                        Container(
-                                          alignment: Alignment.center,
-                                          padding: EdgeInsets.all(4),
-                                          margin: EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                              color:
-                                                  Theme.of(context).accentColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(4)),
-                                          child: Text(
-                                            tagValue[item],
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: MyColors.textDark,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
+                                    return Container(
+                                      alignment: Alignment.center,
+                                      padding: EdgeInsets.all(4),
+                                      margin: EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                          color:
+                                              Theme.of(context).accentColor,
+                                          borderRadius:
+                                              BorderRadius.circular(4)),
+                                      child: Text(
+                                        tagValue[item],
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: MyColors.textDark,
                                         ),
-                                      ],
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     );
                                   }),
                             ),
@@ -142,37 +138,37 @@ class ListContainerItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: MyColors.textMedium,
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(18),
-                          bottomRight: Radius.circular(18))),
-                  alignment: Alignment.centerLeft,
-                  height: constraints.maxHeight * .2,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      IconButton(
-                        padding: EdgeInsets.all(4),
-                        icon: Icon(
-                          Icons.alarm,
-                          size: 36,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                        color: MyColors.greenCustom,
-                      ),
-                      Text(
-                        note.reminderTime == null
-                            ? 'no reminder'
-                            : note.reminderTime,
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                      )
-                    ],
-                  ),
-                )
+                // Container(
+                //   decoration: BoxDecoration(
+                //       color: MyColors.textMedium,
+                //       borderRadius: BorderRadius.only(
+                //           bottomLeft: Radius.circular(18),
+                //           bottomRight: Radius.circular(18))),
+                //   alignment: Alignment.centerLeft,
+                //   height: constraints.maxHeight * .2,
+                //   child: Row(
+                //     mainAxisSize: MainAxisSize.min,
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     children: <Widget>[
+                //       IconButton(
+                //         padding: EdgeInsets.all(4),
+                //         icon: Icon(
+                //           Icons.alarm,
+                //           size: 36,
+                //           color: Colors.white,
+                //         ),
+                //         onPressed: () {},
+                //         color: MyColors.greenCustom,
+                //       ),
+                //       Text(
+                //         note.reminderTime == null
+                //             ? 'no reminder'
+                //             : note.reminderTime,
+                //         style: TextStyle(fontSize: 18, color: Colors.white),
+                //       )
+                //     ],
+                //   ),
+                // )
               ],
             );
           },

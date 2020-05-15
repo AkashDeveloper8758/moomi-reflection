@@ -16,107 +16,91 @@ class HomeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Provider.of<NotesProvider>(context, listen: false)
-          .getAllNotes(),
+      future: Provider.of<NotesProvider>(context, listen: false).getAllNotes(),
       builder: (ctx, snapshot) {
         return snapshot.connectionState == ConnectionState.waiting
-            ? SliverToBoxAdapter(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
+            ? Center(
+                child: CircularProgressIndicator(),
               )
             : Consumer<NotesProvider>(
                 //consumer of sql note fetch
                 builder: (ctx, notesItem, ch) {
-                  // print(
-                  //     'home : notes length : ${notesItem.notes.length}');
-
+                  print('---------------------------');
+                  print('getting notes again ');
+                  print('---------------------------');
                   return notesItem.notes.length > 0
-                      ? SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (ctx, i) {
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (cts) =>
-                                          NewEditScreen(),
-                                      settings: RouteSettings(
-                                          arguments:
-                                              notesItem.notes[i]),
-                                    ),
+                      ? ListView.builder(
+                        shrinkWrap: true,
+                          itemBuilder: (ctx, i) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (cts) => NewEditScreen(),
+                                    settings: RouteSettings(
+                                        arguments: notesItem.notes[i]),
+                                  ),
+                                );
+                              },
+                              child: Dismissible(
+                                key: ValueKey(notesItem.notes[i].id),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                  color: Colors.red,
+                                  alignment: Alignment.centerRight,
+                                  padding: EdgeInsets.only(right: 8),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.delete,
+                                        color: Colors.white,
+                                        size: 35,
+                                      ),
+                                      Text('Delete',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18)),
+                                    ],
+                                  ),
+                                ),
+                                //main note list items ---------------------------
+                                child: ListContainerItem(
+                                  note: notesItem.notes[i],
+                                  query: mediaQuery,
+                                  key: ValueKey(notesItem.notes[i].id),
+                                ),
+                                confirmDismiss: (direction) {
+                                  return buildShowDialog(
+                                    context,
                                   );
                                 },
-                                child: Dismissible(
-                                  key:
-                                      ValueKey(notesItem.notes[i].id),
-                                  direction:
-                                      DismissDirection.endToStart,
-                                  background: Container(
-                                    color: Colors.red,
-                                    alignment: Alignment.centerRight,
-                                    padding:
-                                        EdgeInsets.only(right: 8),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.end,
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.delete,
-                                          color: Colors.white,
-                                          size: 35,
-                                        ),
-                                        Text('Delete',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18)),
-                                      ],
-                                    ),
-                                  ),
-                                  //main note list items ---------------------------
-                                  child: ListContainerItem(
-                                    note: notesItem.notes[i],
-                                    query: mediaQuery,
-                                    key: ValueKey(
-                                        notesItem.notes[i].id),
-                                  ),
-                                  confirmDismiss: (direction) {
-                                    return buildShowDialog(
-                                      context,
-                                    );
-                                  },
-                                  onDismissed: (direction) {
-                                    Provider.of<NotesProvider>(
-                                            context,
-                                            listen: false)
-                                        .deleteNote(
-                                            notesItem.notes[i].id);
-                                  },
-                                ),
-                              );
-                            },
-                            childCount: notesItem.notes.length,
-                          ),
+                                onDismissed: (direction) {
+                                  Provider.of<NotesProvider>(context,
+                                          listen: false)
+                                      .deleteNote(notesItem.notes[i].id);
+                                },
+                              ),
+                            );
+                          },
+                          itemCount: notesItem.notes.length,
                         )
-                      : SliverToBoxAdapter(
-                          // if notes are empty
-                          child: Center(
-                              heightFactor: 16,
-                              child: Text(
-                                'no notes found yet !!',
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .primaryColor,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                        );
+                      : Center(
+                          heightFactor: 16,
+                          child: Text(
+                            'no notes found yet !!',
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold),
+                          ));
                 },
               );
       },
     );
   }
-    Future<bool> buildShowDialog(BuildContext context) {
+
+  Future<bool> buildShowDialog(BuildContext context) {
     return showDialog(
       context: context,
       builder: (ctx) {

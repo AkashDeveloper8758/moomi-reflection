@@ -34,7 +34,7 @@ class _NewEditScreenState extends State<NewEditScreen> {
   @override
   void didChangeDependencies() {
     if (!check) {
-      print('dependencies called: EDIT SCREEN');
+      // print('dependencies called: EDIT SCREEN');
       final routeData = ModalRoute.of(context).settings.arguments as Note;
       updatingNote = routeData;
       if (updatingNote != null) {
@@ -80,13 +80,13 @@ class _NewEditScreenState extends State<NewEditScreen> {
   final List<Widget> tagsWidgetList = [];
 
   void tagList() {
-    print('ALL TAGS : ${generalDataStore.tags}');
+    // print('ALL TAGS : ${generalDataStore.tags}');
     List<String> tempTagsItems = [];
     tagsWidgetList.clear();
-    print('tag list items :MAIN: $tagsListItems');
+    // print('tag list items :MAIN: $tagsListItems');
     if (tagsListItems.isNotEmpty) {
       tagsListItems.forEach((k, v) => {
-            print('tagListItem keys: $k'),
+            // print('tagListItem keys: $k'),
             tempTagsItems.add(k),
             tagsWidgetList.add(Tags(
               key: ValueKey(k),
@@ -99,11 +99,11 @@ class _NewEditScreenState extends State<NewEditScreen> {
     }
     var finalTags = TagsAlgo.getNotesTagsList(tempTagsItems);
     if (finalTags.length > 0 && generalDataStore.tags.length > 0) {
-      print('generalDataStore tags are : ${generalDataStore.tags}');
-      print('final  tags are : $finalTags');
+      // print('generalDataStore tags are : ${generalDataStore.tags}');
+      // print('final  tags are : $finalTags');
 
       finalTags.forEach((k) => {
-            print('tagsName: ${generalDataStore.tags[k]}'),
+            // print('tagsName: ${generalDataStore.tags[k]}'),
             // if (!tempTagsItems.contains(k))
             //   {
             tempTagsItems.add(k),
@@ -158,10 +158,10 @@ class _NewEditScreenState extends State<NewEditScreen> {
     if (tag.isEmpty && tag.length > 2) return;
     String key;
     if (tag.length > 3) {
-      key = tag.substring(0, 3) + Random().nextInt(100).toString();
+      key = tag.substring(0, 3) + Random().nextInt(1000).toString();
       // print(key);
     } else
-      key = tag[0] + tag[1] + Random(200).nextInt(200).toString();
+      key = tag.substring(0, 2) + Random(200).nextInt(200).toString();
 
     setState(() {
       tagsListItems = {...tagsListItems, key: tag};
@@ -173,7 +173,8 @@ class _NewEditScreenState extends State<NewEditScreen> {
       key: tag,
       ...generalDataStore.tags,
     });
-    await Provider.of<GeneralDataProvider>(context,listen: false).setGenData(newGenData);
+    await Provider.of<GeneralDataProvider>(context, listen: false)
+        .setGenData(newGenData);
     //await Provider.of<GeneralDataProvider>(context, listen: false) .deleteGenData();
     _tagController.text = '';
   }
@@ -286,7 +287,7 @@ class _NewEditScreenState extends State<NewEditScreen> {
                               borderRadius: BorderRadius.circular(48),
                               borderSide: BorderSide(
                                   color: Theme.of(context).primaryColor,
-                                  width: 2),
+                                 width: 2),
                             )),
                       ),
                       Positioned(

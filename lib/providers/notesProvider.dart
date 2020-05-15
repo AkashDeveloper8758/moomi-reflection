@@ -39,7 +39,7 @@ class NotesProvider extends ChangeNotifier {
     var dataList = await DbHelper.getNotes(notesTable);
     List<Note> loadedNotes = [];
     loadedNotes = dataList.map((item) {
-     // print('tags items form note fetch: ${item[Safe.tags]}');
+      // print('tags items form note fetch: ${item[Safe.tags]}');
       Map<String, String> jsonTags = Map.castFrom(jsonDecode(item[Safe.tags]));
       return Note(
         id: item[Safe.id],
@@ -73,9 +73,27 @@ class NotesProvider extends ChangeNotifier {
     notifyListeners();
     return checkDelete;
   }
-   Note removeTemperory(int index){
+
+  Note removeTemperory(int index) {
     var note = _notes.removeAt(index);
-     notifyListeners();
-     return note;
-   }
+    notifyListeners();
+    return note;
+  }
+
+  void filterNote(List<String> tag) {
+    List<Note> newNoteList = [];
+    if (tag.isNotEmpty) {
+      print('tag is not empty');
+      for (var i in tag) {
+        newNoteList = _notes.where((note) {
+          return note.tags.containsValue(i);
+        }).toList();
+      }
+    } else {
+        getAllNotes();    
+    }
+    _notes = newNoteList;
+    print(_notes.length);
+    notifyListeners();
+  }
 }

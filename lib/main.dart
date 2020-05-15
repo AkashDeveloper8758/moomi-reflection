@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:moomi/helper/testingDatabase.dart';
 import 'package:moomi/providers/generalDataProvider.dart';
 import 'package:moomi/providers/notesProvider.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
             primaryColor: Color(0xff621A75),
             accentColor: Color(0xffD0FF85),
             fontFamily: 'Rubic'),
-        home: Home(),
+        home: TestingHome(),
         debugShowCheckedModeBanner: false,
       ),
     );

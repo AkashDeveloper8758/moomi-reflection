@@ -1,73 +1,138 @@
-import 'package:moomi/helper/safe.dart';
-import 'package:path/path.dart' as p;
-import 'package:sqflite/sqflite.dart' as sql;
+import 'package:flutter/material.dart' hide Color;
+import 'package:provider/provider.dart';
 
-class DbHelper {
-  static Future<sql.Database> database() async {
-    var dbPath = await sql.getDatabasesPath();
-    return await sql.openDatabase(p.join(dbPath, 'notes.db'),
-        onCreate: (db, version) async {
-      await db.execute('''
-      CREATE TABLE userNotes(
-            ${Safe.id} TEXT PRIMARY KEY,
-            ${Safe.title} TEXT,
-            ${Safe.description} TEXT,
-            ${Safe.tags} TEXT,
-            ${Safe.date} TEXT,
-            ${Safe.reminderTime} TEXT)
-            ''');
-    await db.execute('''
-        CREATE TABLE generalData(
-          ${Safe.generalId} TEXT PRIMARY KEY,
-          ${Safe.userName} TEXT,
-          ${Safe.tagsList} TEXT,
-        )
-        ''');
-    }, version: 1);
+import 'package:moomi/custom/home_list.dart';
+import 'package:moomi/models/note.dart';
+import '../screens/edit_new_creen.dart';
+import '../custom/searchTagitem.dart';
+import '../custom/custom_colors.dart';
+import '../custom/home_list.dart';
+import '../providers/generalDataProvider.dart';
+import '../providers/notesProvider.dart';
+
+class TestingHome extends StatefulWidget {
+  @override
+  _TestingHomeState createState() => _TestingHomeState();
+}
+
+class _TestingHomeState extends State<TestingHome> {
+  final _searchController = TextEditingController();
+  var check = true;
+  List<String> _searchTagsList = [];
+
+  @override
+  void didChangeDependencies() {
+    if (check) {
+      Provider.of<GeneralDataProvider>(context, listen: false).getGenData();
+      check = !check;
+    }
+    super.didChangeDependencies();
   }
 
-  static Future<int> insertNote(
-      String tableName, Map<String, dynamic> data) async {
-    final newDb = await DbHelper.database();
-    return newDb.insert(tableName, data,
-        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+  void _getSearchTag(String tagName) async {
+    if (_searchTagsList.isEmpty) {
+      _searchTagsList.add(tagName);
+    } else {
+      if (_searchTagsList.contains(tagName))
+        _searchTagsList.remove(tagName);
+      else
+        _searchTagsList.add(tagName);
+    }
+    await Provider.of<NotesProvider>(context, listen: false)
+        .filterNote(_searchTagsList);
+    print('searching tags list ARE: $_searchTagsList');
   }
 
-  static Future<List<Map<String, dynamic>>> getNotes(String tableName) async {
-    final newDb = await DbHelper.database();
-    return newDb.query(tableName);
-  }
+  @override
+  Widget build(BuildContext context) {
+    print('TestingHome REBUILD ***>');
 
-  static Future<int> setNotes(
-      String tableName, Map<String, dynamic> note) async {
-    final newDb = await DbHelper.database();
-    var updateInt = await newDb.update(tableName, note,
-        where: '${Safe.id} = ?', whereArgs: [note[Safe.id]]);
-    print('update int return is : $updateInt');
-    return updateInt;
-  }
-
-  static Future<int> removeNote(String tableName, String id) async {
-    final newDb = await DbHelper.database();
-    return newDb.delete(tableName, where: '${Safe.id} =?', whereArgs: [id]);
-  }
-
-//----------------------- general data ---------------------------------------**
-  static Future<int> setGeneralData(
-      String tableName, Map<String, String> generalData) async {
-    final newDb = await DbHelper.database();
-    return newDb.insert(tableName, generalData);
-  }
-
-  static Future<int> updateGenData(
-      String tableName, Map<String, String> generalData) async {
-    final newDb = await DbHelper.database();
-    // return newDb.update(tableName, {Safe.tagsList:generalData},where: '${Safe.generalId}=?',whereArgs: [generalData['id']]);
-    return newDb.update(tableName, {Safe.tagsList: generalData});
-  }
-
-  static Future<List<Map<String, String>>> getGenData(String tableName) async {
-    final newDb = await DbHelper.database();
-    return newDb.query(tableName);
+    final mediaQuery = MediaQuery.of(context);
+    return SafeArea(
+      child: Scaffold(
+        body: Column(children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.only(top: 60),
+                  child: Text(
+                    'Hello, ${generalDataStore.userName}',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: MyColors.textDark,
+                    ),
+                  )),
+              Text(
+                'your all saved notes',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: MyColors.textMedium,
+                ),
+              ),
+            ],
+          ),
+          FutureBuilder(
+            future: Provider.of<GeneralDataProvider>(context, listen: false)
+                .getGenData(),
+            builder: (ctx, snapshot) {
+              return snapshot.connectionState == ConnectionState.waiting
+                  ? SizedBox(
+                      height: 10,
+                    )
+                  : Consumer<GeneralDataProvider>(
+                      builder: (ctx, genData, _) {
+                        List<String> myTagsList = genData
+                            .myGeneralData.tags.entries
+                            .map((item) => item.value)
+                            .toList();
+                        return Container(
+                          margin: const EdgeInsets.only(top: 8, left: 8),
+                          height: 40,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (ctx, i) {
+                              print(
+                                  'general tag list : ${generalDataStore.tags}');
+                              return SearchTagItem(
+                                tagName: myTagsList[i],
+                                getSearchTag: _getSearchTag,
+                                //  key: ValueKey(myTagsList),
+                              );
+                            },
+                            itemCount: myTagsList.length,
+                          ),
+                        );
+                      },
+                    );
+            },
+          ),
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.only(top: 10),
+              child: HomeList(
+                mediaQuery: mediaQuery,
+              ),
+            ),
+          ),
+        ]),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (ctx) => NewEditScreen()));
+          },
+          backgroundColor: Theme.of(context).primaryColor,
+          splashColor: Theme.of(context).primaryColor.withOpacity(.5),
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+            size: 38,
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      ),
+    );
   }
 }

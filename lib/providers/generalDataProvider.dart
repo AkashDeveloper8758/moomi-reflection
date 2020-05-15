@@ -7,6 +7,11 @@ import 'package:moomi/models/note.dart';
 
 class GeneralDataProvider extends ChangeNotifier {
   final _tableName = 'generalData';
+  GenData _generalData ;
+  GenData get myGeneralData {
+    return _generalData;
+  }
+
   Future setGenData(GenData genData) async {
     var data = await DbHelper.getGenData(_tableName);
     if(data.length>0){
@@ -15,7 +20,8 @@ class GeneralDataProvider extends ChangeNotifier {
       await DbHelper.setGeneralData(_tableName, genData.toMap());
     }
     generalDataStore = genData;
-    print('GEN : updaae form <general data> : ${genData.tags}');
+    _generalData = genData;
+    // print('GEN : updaae form <general data> : ${genData.tags}');
     notifyListeners();
   }
 
@@ -25,7 +31,8 @@ class GeneralDataProvider extends ChangeNotifier {
        Map<String, String> tagsList =
            Map.castFrom(jsonDecode(data[0][Safe.tagsList]));
        generalDataStore = GenData(id: data[0][Safe.generalId], tags: tagsList,userName: data[0][Safe.userName]);
-       print('GEN: printing from <general Keys: >: ${generalDataStore.tags}');
+       _generalData = generalDataStore;
+      //  print('GEN: printing from <general Keys: >: ${generalDataStore.tags}');
        notifyListeners();
     }else print('GEN: data length is null');
   }

@@ -14,10 +14,18 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final _searchController = TextEditingController();
+  var check = true;
+  @override
+  void didChangeDependencies() {
+    if(check){
+      Provider.of<GeneralDataProvider>(context,listen: false).getGenData();
+      check = !check;
+    }
+    super.didChangeDependencies();
+  }
   
   @override
   Widget build(BuildContext context) {
-    Provider.of<GeneralDataProvider>(context,listen: false).getGenData();
     print('home REBUILD ***>');
     final mediaQuery = MediaQuery.of(context);
     return SafeArea(
@@ -26,12 +34,12 @@ class _HomeState extends State<Home> {
           builder: (context) => CustomScrollView(
             slivers: <Widget>[
               SliverAppBar(
-                  expandedHeight: 150,
+                   expandedHeight: 150,
                   titleSpacing: 0.0,
                   pinned: true,
                   elevation: 0,
                   backgroundColor: Colors.transparent,
-                  title: Container(
+                 title: Container(
                     padding: EdgeInsets.symmetric(
                       horizontal: 18,
                     ),
